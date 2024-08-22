@@ -45,34 +45,22 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/insert', upload.single('image'), async (req, res) => {
+router.post('/insert', upload.single('image'), async (req, res, next) => {
     try {
-        const { product_name, brand, price, description, hot, category } = req.body;
-        const image = req.file ? req.file.location : null; // Lấy URL của file từ S3
-
-        // Tìm category từ ID
-        const categoryFind = await categoryModel.findById(category);
-        if (!categoryFind) {
-            return res.status(404).json({ error: 'Category not found' });
-        }
-
-        // Tạo sản phẩm mới
-        const result = await productController.insert({
-            product_name,
-            brand,
-            price,
-            hot,
-            description,
-            image,
-            category,
-        });
-
-        res.status(201).json(result);
+      const body = req.body;
+      body.image = req.file.filename;
+      
+      const result = await productController.insert(body)
+      if(!result){
+      res.status(400).json({message: "Lỗi"})
+      }
+     res.status(200).json({result,status: "OK" , message: "Thêm Sản Phẩm Thành Công"})
+  
     } catch (error) {
-        console.error('Error inserting product:', error.message);
-        res.status(500).json({ error: error.message });
+      res.status(500).json({message : error.message})
     }
-});
+  });  
+
 
 router.put('/update/:id', upload.single('image'), async (req, res) => {
     try {
