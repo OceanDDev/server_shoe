@@ -2,18 +2,39 @@ const express = require('express');
 const router = express.Router();
 const productController = require('../mongo/product.Controller');
 const multer = require('multer');
+const multerS3 = require('multer-s3');
+const AWS = require('aws-sdk');
 const categoryModel = require('../mongo/category.model'); 
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/images/'); 
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}_${file.originalname}`);
-    }   
+// Cấu hình AWS S3
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION
 });
 
-const upload = multer({ storage: storage });
+const s3 = new AWS.S3();
+
+if (!process.env.AWS_S3_BUCKET) {
+    throw new Error('AWS_S3_BUCKET environment variable is required');
+}
+
+const upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_S3_BUCKET,
+        acl: 'public-read',
+        metadata: (req, file, cb) => {
+            cb(null, { fieldName: file.fieldname });
+        },
+        key: (req, file, cb) => {
+            cb(null, `images/${Date.now()}_${file.originalname}`);
+        }
+    })
+});
+
+// Các route còn lại không thay đổi
+
 
 router.get('/', async (req, res) => {
     try {
@@ -28,7 +49,7 @@ router.get('/', async (req, res) => {
 router.post('/insert', upload.single('image'), async (req, res) => {
     try {
         const { product_name, brand, price, description, hot, category } = req.body;
-        const image = req.file ? req.file.filename : null; // Xử lý trường hợp không có file
+        const image = req.file ? req.file.location : null; // Lấy URL của file từ S3
 
         // Tìm category từ ID
         const categoryFind = await categoryModel.findById(category);
@@ -58,7 +79,7 @@ router.put('/update/:id', upload.single('image'), async (req, res) => {
     try {
         const { id } = req.params;
         const body = req.body;
-        body.image = req.file ? req.file.filename : req.body.imgOld; // Xử lý trường hợp không có file
+        body.image = req.file ? req.file.location : req.body.imgOld; // Lấy URL của file từ S3 hoặc sử dụng giá trị cũ
 
         const productUpdate = await productController.update(id, body);
         res.status(200).json(productUpdate);
