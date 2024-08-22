@@ -35,7 +35,6 @@ const upload = multer({
 
 // Các route còn lại không thay đổi
 
-
 router.get('/', async (req, res) => {
     try {
         const products = await productController.getAll();
