@@ -1,6 +1,6 @@
 const UserModel = require('./user.model');
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt'); 
+const bcryptjs = require('bcryptjs');
 
 module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signIn,login};
 
@@ -84,8 +84,8 @@ module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signI
             if (user) {
                 throw new Error(`User ${email} already exists`);
             }
-            const salt = bcrypt.genSaltSync(10);
-            const hash = bcrypt.hashSync(password, salt);
+            const salt = bcryptjs.genSaltSync(10);
+            const hash = bcryptjs.hashSync(password, salt);
             user = new UserModel({ fullname, email, password: hash, role: role || 1, birthday });
             const result = await user.save();
             return result;
@@ -101,7 +101,7 @@ module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signI
             if(!user) {
                 throw new Error("Email chưa tạo")
             }
-            const checkpass = bcrypt.compareSync(password,user.password)
+            const checkpass = bcryptjs.compareSync(password,user.password)
             if(!checkpass) {
                 throw new Error("Sai Mật Khẩu")
             }
