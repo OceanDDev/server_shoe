@@ -31,7 +31,7 @@
         }
     });
 
-    // Lấy người dùng theo ID
+    // Lấy người dùng theo ID 
     router.get('/users/:id', async (req, res) => {
         const userId = req.params.id;
         try {
