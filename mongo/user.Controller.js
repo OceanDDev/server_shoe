@@ -1,4 +1,3 @@
-const productModel = require('../../lab6/mongo/product.model');
 const UserModel = require('./user.model');
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt'); 

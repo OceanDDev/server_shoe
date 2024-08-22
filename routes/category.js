@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 const categoryController = require('../mongo/category.Controller');
 const multer = require('multer');
-const categoryModel = require('../mongo/category.model');
 
 const upload = multer({ dest: 'uploads/' }); 
 

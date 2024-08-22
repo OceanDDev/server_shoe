@@ -2,7 +2,6 @@
     const router = express.Router();
     const userController = require('../mongo/user.Controller')
     const multer = require('multer');
-    const UserModel = require('../mongo/user.model');
 
 
 
