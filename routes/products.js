@@ -33,8 +33,7 @@ const upload = multer({
     })
 });
 
-// Các route còn lại không thay đổi
-
+// Route lấy tất cả sản phẩm
 router.get('/', async (req, res) => {
     try {
         const products = await productController.getAll();
@@ -45,6 +44,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Route thêm sản phẩm mới
 router.post('/insert', upload.single('image'), async (req, res) => {
     try {
         const { product_name, brand, price, description, hot, category } = req.body;
@@ -74,11 +74,12 @@ router.post('/insert', upload.single('image'), async (req, res) => {
     }
 });
 
+// Route cập nhật sản phẩm
 router.put('/update/:id', upload.single('image'), async (req, res) => {
     try {
         const { id } = req.params;
         const body = req.body;
-        body.image = req.file ? req.file.location : req.body.imgOld; // Lấy URL của file từ S3 hoặc sử dụng giá trị cũ
+        body.image = req.file ? req.file.location : body.imgOld; // Lấy URL của file từ S3 hoặc sử dụng giá trị cũ
 
         const productUpdate = await productController.update(id, body);
         res.status(200).json(productUpdate);
@@ -88,6 +89,7 @@ router.put('/update/:id', upload.single('image'), async (req, res) => {
     }
 });
 
+// Route xóa sản phẩm
 router.delete('/delete/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -102,6 +104,7 @@ router.delete('/delete/:id', async (req, res) => {
     }
 });
 
+// Route lấy sản phẩm theo ID
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -116,6 +119,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Route lấy sản phẩm theo trang và giới hạn
 router.get('/page/:page/limit/:limit', async (req, res) => {
     try {
         const { page, limit } = req.params;
@@ -127,6 +131,7 @@ router.get('/page/:page/limit/:limit', async (req, res) => {
     }
 });
 
+// Route lấy sản phẩm theo tên danh mục
 router.get('/category/:categoryName', async (req, res) => {
     try {
         const { categoryName } = req.params;
@@ -141,6 +146,7 @@ router.get('/category/:categoryName', async (req, res) => {
     }
 });
 
+// Route tìm kiếm sản phẩm theo từ khóa
 router.get('/search/:keyword', async (req, res) => {
     try {
         const { keyword } = req.params;
@@ -155,6 +161,7 @@ router.get('/search/:keyword', async (req, res) => {
     }
 });
 
+// Route sắp xếp sản phẩm theo giá
 router.get('/sort-price/:order/:limit', async (req, res) => {
     try {
         const { order, limit } = req.params;
@@ -169,6 +176,7 @@ router.get('/sort-price/:order/:limit', async (req, res) => {
     }
 });
 
+// Route lấy sản phẩm hot
 router.get('/hot-products/:num', async (req, res) => {
     try {
         const { num } = req.params;
