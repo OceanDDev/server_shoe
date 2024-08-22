@@ -1,16 +1,17 @@
     const express = require('express');
     const router = express.Router();
     const userController = require('../mongo/user.Controller')
+    
 
 
 
 
 
     // Tạo người dùng mới
-    router.post('/add', async (req, res) => {
+    router.post('/', async (req, res) => {
         try {
-            const { name, email, pass } = req.body;
-            const newUser = await userController.createUser({ name, email, pass });
+            const { fullname,birthday, email, password, isAdmin } = req.body;
+            const newUser = await userController.createUser({ fullname,birthday, email, password, isAdmin });
             return res.status(201).json(newUser);
         } catch (error) {
             console.error('Error adding user: ' + error);
@@ -29,8 +30,8 @@
         }
     });
 
-    // Lấy người dùng theo ID 
-    router.get('/users/:id', async (req, res) => {
+    // Lấy người dùng theo ID
+    router.get('/:id', async (req, res) => {
         const userId = req.params.id;
         try {
             const user = await userController.getUserById(userId);
@@ -42,7 +43,7 @@
     });
 
     // Xóa người dùng
-    router.delete('/users/:id', async (req, res) => {
+    router.delete('/:id', async (req, res) => {
         const userId = req.params.id;
         try {
             const result = await userController.removeUser(userId);
@@ -54,7 +55,7 @@
     });
 
     // Cập nhật người dùng
-    router.put('/users/:id', async (req, res) => {
+    router.put('/:id', async (req, res) => {
         const userId = req.params.id;
         const userData = req.body;
         try {

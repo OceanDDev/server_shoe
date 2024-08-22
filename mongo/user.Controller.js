@@ -6,12 +6,14 @@ module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signI
 
     async function createUser(body) {
         try {
-            const { name, email, pass } = body;
+            const { fullname, email, password, birthday,isAdmin } = body;
 
             const newUser = new UserModel({
-                name,
+                fullname,
                 email,
-                pass
+                password,
+                birthday,
+                isAdmin
             });
 
             const result = await newUser.save();
@@ -57,7 +59,7 @@ module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signI
 
     async function updateUser(id, body) {
         try {
-            const { fullname, email, password, birthday } = body;
+            const { fullname, email, password, birthday,isAdmin } = body;
 
             const user = await UserModel.findById(id);
             if (!user) {
@@ -68,6 +70,7 @@ module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signI
             user.email = email;
             user.password = password;
             user.birthday = birthday;
+            user.isAdmin = isAdmin;
 
             const result = await user.save();
             return result;
@@ -79,14 +82,14 @@ module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signI
     
     async function signIn(body) {
         try {
-            let { fullname, email, password, role, birthday} = body;
+            let { fullname, email, password, isAdmin, birthday} = body;
             let user = await UserModel.findOne({ email: email });
             if (user) {
                 throw new Error(`User ${email} already exists`);
             }
             const salt = bcryptjs.genSaltSync(10);
             const hash = bcryptjs.hashSync(password, salt);
-            user = new UserModel({ fullname, email, password: hash, role: role || 1, birthday });
+            user = new UserModel({ fullname, email, password: hash, isAdmin: isAdmin || 1, birthday });
             const result = await user.save();
             return result;
         } catch (error) {
@@ -107,7 +110,7 @@ module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signI
             }
             delete user._doc.password
             const token = jwt.sign(
-                {_id:user._id, email:user.email, role:user.role}, 
+                {_id:user._id, email:user.email, isAdmin:user.isAdmin}, 
                 "duong",
                 {expiresIn: "1d"}
             )
