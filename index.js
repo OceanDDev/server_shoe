@@ -19,11 +19,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
-app.use(cors({
-  origin: ['http://localhost:3001', 'https://react-shoe-beta.vercel.app'], // Thay thế bằng URL frontend của bạn
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Cụ thể các phương thức HTTP mà bạn cần
-  allowedHeaders: ['Content-Type', 'Authorization'] // Các headers mà bạn cần sử dụng
-}));
+app.use(cors())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
