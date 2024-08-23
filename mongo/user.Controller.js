@@ -82,20 +82,20 @@ module.exports = {createUser,getAllUsers,getUserById,removeUser,updateUser,signI
     
     async function signIn(body) {
         try {
-            let { fullname, email, password, isAdmin, birthday} = body;
+            let { fullname, email, password, isAdmin, birthday } = body;
             let user = await UserModel.findOne({ email: email });
             if (user) {
                 throw new Error(`User ${email} already exists`);
             }
             const salt = bcryptjs.genSaltSync(10);
             const hash = bcryptjs.hashSync(password, salt);
-            user = new UserModel({ fullname, email, password: hash, isAdmin: isAdmin || 1, birthday });
+            user = new UserModel({ fullname, email, password: hash, isAdmin: isAdmin || 0, birthday }); 
             const result = await user.save();
             return result;
         } catch (error) {
             throw error;
         }
-    }   
+    }
     
     async function login(body) {
         try {
